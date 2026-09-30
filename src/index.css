@@ -1,0 +1,174 @@
+@import "tailwindcss";
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Frosted ops console design system.
+ * Brand indigo + cyan accent on a cool mist background, frosted translucent
+ * surfaces, Inter for UI and JetBrains Mono for data labels.
+ */
+
+@theme inline {
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-data);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+}
+
+:root {
+  --font-ui: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius: 0.75rem;
+
+  /* #eef1f6 */
+  --background: oklch(0.954 0.007 264.5);
+  /* #18181b */
+  --foreground: oklch(0.21 0.006 285.9);
+
+  --card: oklch(1 0 0 / 55%);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.995 0.002 264.5);
+  --popover-foreground: var(--foreground);
+
+  /* #4f46e5 */
+  --primary: oklch(0.511 0.262 276.97);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(1 0 0 / 60%);
+  --secondary-foreground: oklch(0.37 0.012 285.8);
+
+  --muted: oklch(0.967 0.003 264.5);
+  --muted-foreground: oklch(0.552 0.014 285.9);
+
+  /* #06b6d4 */
+  --accent: oklch(0.715 0.143 215.22);
+  --accent-foreground: oklch(0.21 0.006 285.9);
+
+  --destructive: oklch(0.628 0.226 18.5);
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.63 0.152 156.5);
+  --warning: oklch(0.72 0.165 66.5);
+
+  --border: oklch(0.21 0.006 285.9 / 8%);
+  --input: oklch(0.21 0.006 285.9 / 8%);
+  --ring: oklch(0.511 0.262 276.97 / 40%);
+
+  --chart-1: oklch(0.511 0.262 276.97);
+  --chart-2: oklch(0.715 0.143 215.22);
+  --chart-3: oklch(0.63 0.152 156.5);
+  --chart-4: oklch(0.72 0.165 66.5);
+  --chart-5: oklch(0.65 0.22 330);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Frosted translucent panel used across the console */
+@utility panel {
+  background-color: color-mix(in oklab, white 55%, transparent);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 0 0 1px oklch(0.21 0.006 285.9 / 6%);
+  border-radius: var(--radius);
+}
+
+@utility panel-strong {
+  background-color: color-mix(in oklab, white 72%, transparent);
+  backdrop-filter: blur(28px);
+  box-shadow: 0 0 0 1px oklch(0.21 0.006 285.9 / 6%);
+}
+
+@utility field {
+  width: 100%;
+  height: 2.25rem;
+  padding-inline: 0.75rem;
+  border-radius: calc(var(--radius) - 2px);
+  background-color: color-mix(in oklab, white 70%, transparent);
+  box-shadow: 0 0 0 1px oklch(0.21 0.006 285.9 / 7%);
+  font-size: 0.875rem;
+  outline: none;
+  &:focus {
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+}
+
+@utility data-label {
+  font-family: var(--font-data);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(40px, -30px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes drift2 {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-50px, 40px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@utility orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  pointer-events: none;
+}
