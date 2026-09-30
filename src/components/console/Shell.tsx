@@ -83,7 +83,7 @@ export function Shell({
                 <p className="data-label px-3 pt-3 pb-1 tracking-[0.14em]">{group.label}</p>
                 {group.items
                 //   .filter((item) => !item.adminOnly || isAdmin)
-                  .map((item) => {
+                  .map((item) => { 
                     const active = false;
                     const Icon = item.icon;
                     return (
