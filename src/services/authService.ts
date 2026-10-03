@@ -1,26 +1,24 @@
-import apiInstance from "./ApiInstance"
+import { authServiceInstance } from "./ApiInstance"
 
-export const userLogin = async (login:string, password: string) => {
+export const userLogin = async (login: string, password: string) => {
     try {
-        // const response = await apiInstance(
-        //     `/api/login`,
-        //     {
-        //         'method': 'POST',
-        //         data: JSON.stringify({login, password})
-        //     }
-        // )
-        return {
-            success: true,
-            data: [{
-                username: 'admin',
-                email: 'admin@dev.com',
-                phone: '1234567890',
-            }]
-        }
-        // { method: 'POST', body: JSON.stringify({ login, password }), headers: HEADERS, credentials: 'include' }
-        // if (!response.ok)
-        //     throw new Error("User authentication failed!!")
-        // return await response.json()
+        const response = await authServiceInstance.post(
+            `/auth/login`,
+            { login, password }
+        )
+        return response.data
+    } catch (err) {
+        throw err
+    }
+}
+
+export const registerUser = async (formData: any) => {
+    try {
+        const response = await authServiceInstance.post(
+            `/auth/register`,
+            formData
+        )
+        return response.data
     } catch (err) {
         throw err
     }

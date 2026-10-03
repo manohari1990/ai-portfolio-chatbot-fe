@@ -27,10 +27,10 @@ export default function Home() {
             <div className="relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col px-6">
                 <header className="flex h-16 items-center gap-2.5">
                     <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-accent text-sm font-semibold text-primary-foreground">
-                        C
+                        AIP
                     </div>
                     <div className="leading-tight">
-                        <p className="text-[15px] font-semibold">Candify</p>
+                        <p className="text-[15px] font-semibold">AI Portfolio Manager</p>
                         <p className="text-[11px] text-muted-foreground">Admin Console</p>
                     </div>
                     <div className="ml-auto">

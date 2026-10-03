@@ -6,45 +6,68 @@ import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import InputField from "../components/ui/InputField";
 import { useAuth } from "../hooks/useAuth";
-import { userLogin } from "../services/authService";
-// import { DEMO_ACCOUNTS, supabase } from "@/lib/mock-db";
-
+import { registerUser, userLogin } from "../services/authService";
+import { REGISTRATION_PAYLOAD } from "../lib/Constant";
+interface RegistrationPayload{
+    first_name?: string,
+    last_name?: string,
+    username?: string,
+    email: string,
+    password: string,
+    phone?: string
+}
 export default function Auth() {
     const [mode, setMode] = useState<"signin" | "signup">("signin");
-    const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setformData] = useState<RegistrationPayload>(REGISTRATION_PAYLOAD)
     const [busy, setBusy] = useState(false);
-    const {login} = useAuth();
+    const { login } = useAuth();
+    const [errors, setErrors] = useState([])
+    const [apiResponse, setApiResponse] = useState('')
     const navigate = useNavigate();
 
-    //   useEffect(() => {
-    //     console.log(user,"==========user")
-    //     login(response.records[0])
-    //     if (user) navigate({ to: "/dashboard", replace: true });
-    //   }, [user]);
-
-    async function handleSubmit(event: React.FormEvent) {
-        event.preventDefault();
-        setBusy(true);
-        // if(errors.length > 0) {
-        //     setErrors(prev=> []);
-        //     return;
-        // }
-        setBusy(true);
-        try{
-            const response = await userLogin(email, password)
-            if(response.success){
-                login(response.data[0])
-                navigate('/dashboard');
+    const handleFormData = (obj) =>{
+        setformData((prev)=>{
+            return {
+                ...prev,
+                [obj.target.name]: obj.target.value
             }
-        }catch(err){
+        })
+        // if(errors !== ''){
+        //     setErrors((prev)=> {
+        //         return [
+        //             obj.err
+        //         ]
+        //     })
+        // }
+    }
+
+    async function handleSubmit(event: any) {
+        event.preventDefault();
+        if (errors.length > 0) {
+            setErrors(prev => []);
+            return;
+        }
+        try {
+            setBusy(true);
+            if (mode === "signup") {
+                const response = await registerUser(formData)
+                if (response.success) {
+                    // login(response.records[0])
+                    navigate('/login');
+                }
+            } else {
+                const response = await userLogin(formData.email, formData.password)
+                if (response.success) {
+                    login(response.records[0])
+                    navigate('/dashboard');
+                }
+            }
+        } catch (err) {
             console.log(err)
-            // setApiMessage(err)
-        }finally{
+            setApiResponse(err)
+        } finally {
             setBusy(false)
         }
-
     }
 
     return (
@@ -63,10 +86,10 @@ export default function Auth() {
             <div className="panel-strong relative z-10 w-full max-w-sm rounded-xl p-6">
                 <div className="flex items-center gap-2.5">
                     <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-accent text-sm font-semibold text-primary-foreground">
-                        C
+                        AIP
                     </div>
                     <div className="leading-tight">
-                        <p className="text-[15px] font-semibold">Candify</p>
+                        <p className="text-[15px] font-semibold">AI Portfolio Manager</p>
                         <p className="text-[11px] text-muted-foreground">Admin Console</p>
                     </div>
                 </div>
@@ -82,26 +105,88 @@ export default function Auth() {
 
                 <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
                     {mode === "signup" ? (
-                        <div className="space-y-1.5">
-                            <InputField
-                                label={{
-                                    name: "Full name",
-                                    className: "block text-xs font-medium text-muted-foreground",
-                                }}
-                                type="text"
-                                id="fullName"
-                                name="fullName"
-                                className="field"
-                                value={fullName}
-                                placeholder="Maya Okonkwo"
-                                validation={{
-                                    required: true,
-                                    maxLength: 100,
-                                    allowSpace: true
-                                }}
-                                handleInput={(target: any, error: string) => { setFullName(target.value) }}
-                            />
-                        </div>
+                        <>
+                            <div className="space-y-1.5">
+                                <InputField
+                                    label={{
+                                        name: "Username",
+                                        className: "block text-xs font-medium text-muted-foreground",
+                                    }}
+                                    type="text"
+                                    id="username"
+                                    name="username"
+                                    className="field"
+                                    value={formData.username}
+                                    placeholder="maya_okonkwo"
+                                    validation={{
+                                        required: true,
+                                        maxLength: 100,
+                                        allowSpace: false
+                                    }}
+                                    handleInput={(e)=>handleFormData(e)}
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <InputField
+                                    label={{
+                                        name: "First name",
+                                        className: "block text-xs font-medium text-muted-foreground",
+                                    }}
+                                    type="text"
+                                    id="first_name"
+                                    name="first_name"
+                                    className="field"
+                                    value={formData.first_name}
+                                    placeholder="Maya"
+                                    validation={{
+                                        required: true,
+                                        maxLength: 100,
+                                        allowSpace: true
+                                    }}
+                                    handleInput={(e)=>handleFormData(e)}
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <InputField
+                                    label={{
+                                        name: "Last name",
+                                        className: "block text-xs font-medium text-muted-foreground",
+                                    }}
+                                    type="text"
+                                    id="last_name"
+                                    name="last_name"
+                                    className="field"
+                                    value={formData.last_name}
+                                    placeholder="Okonkwo"
+                                    validation={{
+                                        required: true,
+                                        maxLength: 100,
+                                        allowSpace: true
+                                    }}
+                                    handleInput={(e)=>handleFormData(e)}
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <InputField
+                                    label={{
+                                        name: "Phone",
+                                        className: "block text-xs font-medium text-muted-foreground",
+                                    }}
+                                    type="text"
+                                    id="phone"
+                                    name="phone"
+                                    className="field"
+                                    value={formData.phone}
+                                    placeholder="+91-6263829930"
+                                    validation={{
+                                        required: true,
+                                        maxLength: 100,
+                                        allowSpace: true
+                                    }}
+                                    handleInput={(e)=>handleFormData(e)}
+                                />
+                            </div>
+                        </>
                     ) : null}
                     <div className="space-y-1.5">
                         <InputField
@@ -110,17 +195,17 @@ export default function Auth() {
                                 className: "block text-xs font-medium text-muted-foreground",
                             }}
                             type="text"
-                            id="username"
-                            name="username"
+                            id="email"
+                            name="email"
                             className="field"
-                            value={email}
+                            value={formData.email}
                             placeholder="you@company.com"
                             validation={{
                                 required: true,
                                 maxLength: 100,
                                 allowSpace: false
                             }}
-                            handleInput={(target: any, error: string) => { setEmail(target.value) }}
+                            handleInput={(e)=>handleFormData(e)}
                         />
                     </div>
                     <div className="space-y-1.5">
@@ -133,24 +218,14 @@ export default function Auth() {
                             id="password"
                             name="password"
                             className="field"
-                            value={password}
+                            value={formData.password}
                             placeholder="••••••••"
                             validation={{
                                 required: true,
                                 maxLength: 15,
                                 allowSpace: false
                             }}
-                            handleInput={(target: any, error: string) => { setPassword(target.value) }}
-                        // handleInput={(target, error)=>{
-                        //     setUsername(target.value)
-                        //     if(error !== ''){
-                        //         setErrors((prev)=> {
-                        //             return [
-                        //                 error
-                        //             ]
-                        //         })
-                        //     }
-                        // }}
+                            handleInput={(e)=>handleFormData(e)}
                         />
 
                     </div>

@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { cn } from "../../lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import { StoredAvatar } from "./FileUrl";
+import { useAuth } from "../../hooks/useAuth";
 
 const navGroups = [
   {
@@ -36,7 +37,8 @@ export function Shell({
   children: ReactNode;
 }) {
 //   const { isAdmin, role } = useRole();
-//   const { data: profile } = useProfile();
+  const { user } = useAuth();
+  const profile = user ? JSON.parse(user) : {}
   const navigate = useNavigate();
 //   const queryClient = useQueryClient();
 //   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -69,10 +71,10 @@ export function Shell({
         <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-white/55 backdrop-blur-2xl md:flex">
           <div className="flex h-16 items-center gap-2.5 border-b border-border px-5">
             <div className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-primary to-accent text-sm font-semibold text-primary-foreground">
-              C
+              AIP
             </div>
             <div className="leading-tight">
-              <p className="text-[15px] font-semibold">Candify</p>
+              <p className="text-[15px] font-semibold">AI Portfolio Manager</p>
               <p className="text-[11px] text-muted-foreground">Admin Console</p>
             </div>
           </div>
@@ -111,9 +113,9 @@ export function Shell({
               to="/settings"
               className="flex items-center gap-3 rounded-lg bg-white/60 px-2 py-2 ring-1 ring-border hover:bg-white/80"
             >
-              <StoredAvatar path={''} name={'Manohari'} className="size-8" />
+              <StoredAvatar path={`${profile?.profile_image}`} name={`${profile?.first_name} ${profile?.last_name}`} className="size-8" />
               <div className="min-w-0 leading-tight">
-                <p className="truncate text-sm font-medium">{'Manohari'}</p>
+                <p className="truncate text-sm font-medium">{`${profile?.first_name} ${profile?.last_name}`}</p>
                 <p className="truncate text-[11px] text-muted-foreground capitalize">{'Admin'}</p>
               </div>
               <Settings className="ml-auto size-4 text-muted-foreground" />

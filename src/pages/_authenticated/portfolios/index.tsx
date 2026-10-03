@@ -1,4 +1,4 @@
-// import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -9,43 +9,21 @@ import { EmptyState, PageHeader, StatusDot } from "../../../components/console/P
 import { RecordForm, type FieldDef, type RecordValues } from "../../../components/console/RecordForm";
 import { Shell } from "../../../components/console/Shell";
 import { Button } from "../../../components/ui/button";
-// import { useAuth, useRole } from "../../../hooks/useAuth"
-// import { supabase } from "@/lib/mock-db";
+import { useAuth } from "../../../hooks/useAuth"
+import { GetAllPortfolios } from "../../../services/PortfolioService";
 
 
 export default function Portfolios() {
-//   const { user } = useAuth();
+  const { user } = useAuth();
+  const profile = user ? JSON.parse(user) : {}
   const { isAdmin } = true//useRole();
-//   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<RecordValues | null>(null);
 
-//   const { data: portfolios = [], isLoading } = useQuery({
-//     queryKey: ["portfolios"],
-//     queryFn: async () => {
-//       const { data, error } = await supabase
-//         .from("portfolios")
-//         .select("*")
-//         .order("updated_at", { ascending: false });
-//       if (error) throw error;
-//       return data ?? [];
-//     },
-//   });
-
-//   const { data: owners = [] } = useQuery({
-//     queryKey: ["owner-options"],
-//     enabled: isAdmin,
-//     queryFn: async () => {
-//       const { data, error } = await supabase.from("profiles").select("id, full_name, email");
-//       if (error) throw error;
-//       return data ?? [];
-//     },
-//   });
-
-//   const ownerName = useMemo(() => {
-//     const map = new Map(owners.map((o: any) => [o.id, o.full_name ?? o.email ?? o.id]));
-//     return (id: string) => map.get(id) ?? "—";
-//   }, [owners]);
+    // const ownerName = useMemo(() => {
+    //   const map = new Map(owners.map((o: any) => [o.id, o.full_name ?? o.email ?? o.id]));
+    //   return (id: string) => map.get(id) ?? "—";
+    // }, [owners]);
 
   const fields: FieldDef[] = useMemo(() => {
     const base: FieldDef[] = [
@@ -76,47 +54,55 @@ export default function Portfolios() {
     //   });
     // }
     return base;
-    }, [isAdmin]);
-//   }, [isAdmin, owners]);
+  }, [isAdmin]);
+  //   }, [isAdmin, owners]);
 
-//   const save = useMutation({
-//     mutationFn: async (values: RecordValues) => {
-//       const payload = sanitize(values, fields);
-//       if (!payload["status"]) payload["status"] = "draft";
-//       if (editing) {
-//         const { error } = await supabase
-//           .from("portfolios")
-//           .update(payload as never)
-//           .eq("id", editing["id"] as string);
-//         if (error) throw error;
-//       } else {
-//         const { error } = await supabase
-//           .from("portfolios")
-//           .insert({ ...payload, user_id: (payload["user_id"] as string) || user!.id } as never);
-//         if (error) throw error;
-//       }
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["portfolios"] });
-//       setOpen(false);
-//       setEditing(null);
-//       toast.success("Portfolio saved");
-//     },
-//     onError: (error: Error) => toast.error(error.message),
-//   });
+  //   const save = useMutation({
+  //     mutationFn: async (values: RecordValues) => {
+  //       const payload = sanitize(values, fields);
+  //       if (!payload["status"]) payload["status"] = "draft";
+  //       if (editing) {
+  //         const { error } = await supabase
+  //           .from("portfolios")
+  //           .update(payload as never)
+  //           .eq("id", editing["id"] as string);
+  //         if (error) throw error;
+  //       } else {
+  //         const { error } = await supabase
+  //           .from("portfolios")
+  //           .insert({ ...payload, user_id: (payload["user_id"] as string) || user!.id } as never);
+  //         if (error) throw error;
+  //       }
+  //     },
+  //     onSuccess: () => {
+  //       queryClient.invalidateQueries({ queryKey: ["portfolios"] });
+  //       setOpen(false);
+  //       setEditing(null);
+  //       toast.success("Portfolio saved");
+  //     },
+  //     onError: (error: Error) => toast.error(error.message),
+  //   });
 
-//   const remove = useMutation({
-//     mutationFn: async (id: string) => {
-//       const { error } = await supabase.from("portfolios").delete().eq("id", id);
-//       if (error) throw error;
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ["portfolios"] });
-//       toast.success("Portfolio deleted");
-//     },
-//     onError: (error: Error) => toast.error(error.message),
-//   });
+  //   const remove = useMutation({
+  //     mutationFn: async (id: string) => {
+  //       const { error } = await supabase.from("portfolios").delete().eq("id", id);
+  //       if (error) throw error;
+  //     },
+  //     onSuccess: () => {
+  //       queryClient.invalidateQueries({ queryKey: ["portfolios"] });
+  //       toast.success("Portfolio deleted");
+  //     },
+  //     onError: (error: Error) => toast.error(error.message),
+  //   });
 
+  const { status, data, error, isLoading } = useQuery({
+    queryKey: ['portfolios'],
+    queryFn: async () => {
+      const data = await GetAllPortfolios(profile.user_id)
+      toast.success("Portfolio fetched!");
+      return data.data
+    }
+  })
   return (
     <Shell breadcrumb={[{ label: "Dashboard", to: "/dashboard" }, { label: "Portfolios" }]}>
       <PageHeader
@@ -145,42 +131,42 @@ export default function Portfolios() {
           </p>
         </div>
 
-        {/* {isLoading ? (
+        {isLoading ? (
           <EmptyState title="Loading…" />
-        ) : portfolios.length === 0 ? (
+        ) : data.length === 0 ? (
           <EmptyState title="No portfolios yet" hint="Create your first portfolio to start adding records." />
-        ) : ( */}
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
                   <th className="data-label px-4 py-2.5 font-medium">Portfolio</th>
                   {isAdmin ? <th className="data-label px-4 py-2.5 font-medium">Owner</th> : null}
-                  <th className="data-label px-4 py-2.5 font-medium">Specialization</th>
+                  <th className="data-label px-4 py-2.5 font-medium">Description</th>
                   <th className="data-label px-4 py-2.5 font-medium">Status</th>
                   <th className="data-label px-4 py-2.5 font-medium">Updated</th>
                   <th className="data-label px-4 py-2.5 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {/* {portfolios.map((row: any) => (
-                  <tr key={row.id} className="hover:bg-white/60">
+                {data.map((row: any) => (
+                  <tr key={row.portfolio_id} className="hover:bg-white/60">
                     <td className="px-4 py-3">
                       <Link
                         to="/portfolios/$portfolioId"
-                        params={{ portfolioId: row.id }}
+                        params={{ portfolioId: row.portfolio_id }}
                         className="font-medium hover:text-primary"
                       >
-                        {row.title}
+                        {row.portfolio_name}
                       </Link>
-                      <p className="text-xs text-muted-foreground">{row.headline ?? "—"}</p>
+                      <p className="text-xs text-muted-foreground">{row.user.first_name ? `${row.user.first_name} ${row.user.last_name}` : "—"}</p>
                     </td>
                     {isAdmin ? (
-                      <td className="px-4 py-3 text-muted-foreground">{String(ownerName(row.user_id) ?? "")}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{String(row.user.first_name ?? "")}</td>
                     ) : null}
-                    <td className="px-4 py-3 text-muted-foreground">{row.specialization ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{row.description ?? "—"}</td>
                     <td className="px-4 py-3">
-                      <StatusDot status={row.status} />
+                      <StatusDot status={row.is_active} />
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {new Date(row.updated_at).toLocaleDateString()}
@@ -210,23 +196,23 @@ export default function Portfolios() {
                       </div>
                     </td>
                   </tr>
-                ))} */}
+                ))}
               </tbody>
             </table>
           </div>
-        {/* )} */}
+        )}
       </div>
 
-      {/* <RecordForm
+      <RecordForm
         open={open}
         onOpenChange={setOpen}
         title={editing ? "Edit portfolio" : "New portfolio"}
         description="Portfolio details, cover image and resume."
         fields={fields}
         initial={editing}
-        submitting={save.isPending}
-        onSubmit={(values) => save.mutate(values)}
-      /> */}
+        // submitting={save.isPending}
+        // onSubmit={(values) => save.mutate(values)}
+      />
     </Shell>
   );
 }

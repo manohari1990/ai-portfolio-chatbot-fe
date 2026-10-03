@@ -10,9 +10,9 @@ import { Shell } from "../../components/console/Shell";
 // export const Route = createFileRoute("/_authenticated/chatbot")({
 //   head: () => ({
 //     meta: [
-//       { title: "Chatbot configuration — Candify Console" },
+//       { title: "Chatbot configuration — AI Portfolio Console" },
 //       { name: "description", content: "Set up the assistant that greets visitors on your portfolio." },
-//       { property: "og:title", content: "Chatbot configuration — Candify Console" },
+//       { property: "og:title", content: "Chatbot configuration — AI Portfolio Console" },
 //       { property: "og:description", content: "Set up the assistant that greets visitors on your portfolio." },
 //       { property: "og:type", content: "website" },
 //       { name: "twitter:card", content: "summary_large_image" },

@@ -9,12 +9,19 @@ import { useState, createContext, useEffect } from "react"
 // import { USER_STORAGE_KEY } from "../utils/Constants"
 // import { authenticatedFetch } from "@/services/authService"
 const USER_STORAGE_KEY = 'user'
-
+interface UserData{
+    first_name: string
+    last_name?: string
+    username: string
+    email: string
+    phone?: string
+    profile_image?: string
+}
 // 1. Context
 export const AuthContext = createContext(null)
 // 2. Provider
 export function AuthProvider({children}) {
-    const [user, setUser] = useState(()=>{
+    const [user, setUser] = useState<UserData>(()=>{
                                 const cachedUserData = localStorage.getItem(USER_STORAGE_KEY) === undefined ? null : localStorage.getItem(USER_STORAGE_KEY)
                                 return cachedUserData
                             })

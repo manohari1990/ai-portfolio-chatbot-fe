@@ -27,7 +27,7 @@ export default function InputField({
         setErrorText((prev) => {
             return `${err}`
         })
-        handleInput(target, err)
+        handleInput({target, err})
     }
     return(
         <>
