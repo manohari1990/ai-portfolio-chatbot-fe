@@ -1,5 +1,5 @@
 import { useState } from "react"
-// import {forgetPassword, userLogin} from "../services/authService"
+import { userLogin} from "../services/authService"
 // import { useAuth } from "../hooks/useAuth"
 import { useNavigate } from "react-router-dom";
 import InputField from "../components/ui/InputField";
@@ -42,18 +42,18 @@ function Login() {
             return;
         }
         setIsLoading(true)
-        // try{
-        //     const response = await userLogin(username, password)
-        //     if(response.success){
-        //         login(response.records[0])
-        //         navigate('/todos')
-        //     }
-        // }catch(err){
-        //     console.log(err)
-        //     setApiMessage(err)
-        // }finally{
-        //     setIsLoading(false)
-        // }
+        try{
+            const response = await userLogin(username, password)
+            if(response.success){
+                login(response.records[0])
+                navigate('/todos')
+            }
+        }catch(err){
+            console.log(err)
+            setApiMessage(err)
+        }finally{
+            setIsLoading(false)
+        }
     }
 
 

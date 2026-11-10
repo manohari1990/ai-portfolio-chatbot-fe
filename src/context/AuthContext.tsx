@@ -5,53 +5,41 @@
 // Pass user and setUser through the provider value.
 
 // Don't add login(), logout(), localStorage, or useEffect yet.
-import { useState, createContext, useEffect } from "react"
 // import { USER_STORAGE_KEY } from "../utils/Constants"
 // import { authenticatedFetch } from "@/services/authService"
-const USER_STORAGE_KEY = 'user'
-interface UserData{
-    first_name: string
-    last_name?: string
-    username: string
-    email: string
-    phone?: string
-    profile_image?: string
-}
+
+// interface UserData{
+//     first_name: string
+//     last_name?: string
+//     username: string
+//     email: string
+//     phone?: string
+//     profile_image?: string
+// }
+
+import type { Session } from "../services/api"
+import { useState, createContext } from "react"
+
+const USER_STORAGE_KEY = 'portfolio-os-session'
 // 1. Context
 export const AuthContext = createContext(null)
 // 2. Provider
-export function AuthProvider({children}) {
-    const [user, setUser] = useState<UserData>(()=>{
+export function AuthProvider({children}: {children: React.ReactNode}) {
+    const [user, setUser] = useState<Session | null>(()=>{
                                 const cachedUserData = localStorage.getItem(USER_STORAGE_KEY) === undefined ? null : localStorage.getItem(USER_STORAGE_KEY)
                                 return cachedUserData
                             })
 
-    // useEffect(()=>{
-    //     const checkSession = async()=>{
-    //         try{
-    //             const resp = await authenticatedFetch()
-    //             if (resp && !resp.success) {
-    //                 logout();
-    //             }
-    //         }catch(err){
-    //             setUser(null)
-    //             localStorage.removeItem(USER_STORAGE_KEY)
-    //             throw err
-    //         }
-    //     }
-    //     if(localStorage.getItem('user'))
-    //         checkSession();
-    // },[])
-
-    const login = (userSession: any) =>{
+    const login = (userSession: Session | null) =>{
+        console.log(userSession, "====================userSession")
         setUser(userSession)
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userSession))
         console.info("Login Successful!")
     }
 
-    const updateUser = (updatedInfo: any) => {
+    const updateUser = (updatedInfo: Session | null) => {
         console.log(updatedInfo,"====================updatedInfo")
-        setUser(JSON.stringify(updatedInfo))
+        setUser(updatedInfo)
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedInfo))
         console.info("User updated!")
     }
